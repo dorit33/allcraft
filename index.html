@@ -24,7 +24,7 @@
 <main id="main"></main>
 
 <footer class="site-footer">
-  <span data-i18n="footer_generated"></span> <span id="gendate">2026-10-23 22:20</span>
+  <span data-i18n="footer_generated"></span> <span id="gendate">2026-10-23 22:22</span>
   · <a href="https://github.com" data-i18n="footer_source"></a>
 </footer>
 
@@ -107,7 +107,8 @@ const CATS = ["graphics", "av", "office", "comms", "design", "tools", "devtools"
 
 let lang = localStorage.getItem("cg-lang")
   || (navigator.language && navigator.language.startsWith("hu") ? "hu" : "en");
-let activeCat = "all";
+let activeCats = new Set();
+let onlyReleases = false;
 let query = "";
 
 const t = k => (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k;
@@ -163,10 +164,10 @@ function render() {
   const main = document.getElementById("main");
   let html = "";
   for (const cat of CATS) {
-    if (activeCat !== "all" && activeCat !== "releases" && activeCat !== cat) continue;
+    if (activeCats.size && !activeCats.has(cat)) continue;
     const items = DATA.filter(r => r.category === cat);
     const shown = items.filter(r =>
-      (activeCat !== "releases" || r.release) &&
+      (!onlyReleases || r.release) &&
       (r.name + " " + (r.replaces || "") + " " + (r.description || "")).toLowerCase().includes(query));
     if (!shown.length) continue;
     html += `<section class="cat"><h2 class="cat-title">${t("section_" + cat)} <span class="count">${shown.length} ${t("count_suffix")}</span></h2><div class="grid">`;
@@ -179,11 +180,22 @@ function render() {
 
 function renderCatFilter() {
   const el = document.getElementById("catfilter");
-  const opts = [["all", "cat_all"], ["releases", "cat_releases"], ...CATS.map(c => [c, "cat_" + c])];
-  el.innerHTML = opts.map(([v, k]) =>
-    `<button class="chip${v === activeCat ? " on" : ""}" data-cat="${v}">${t(k)}</button>`).join("");
+  const chips = [
+    ["all", "cat_all", !activeCats.size],
+    ["releases", "cat_releases", onlyReleases],
+    ...CATS.map(c => [c, "cat_" + c, activeCats.has(c)]),
+  ];
+  el.innerHTML = chips.map(([v, k, on]) =>
+    `<button class="chip${on ? " on" : ""}" data-cat="${v}">${t(k)}</button>`).join("");
   el.querySelectorAll("button").forEach(b =>
-    b.addEventListener("click", () => { activeCat = b.dataset.cat; renderCatFilter(); render(); }));
+    b.addEventListener("click", () => {
+      const v = b.dataset.cat;
+      if (v === "all") activeCats.clear();
+      else if (v === "releases") onlyReleases = !onlyReleases;
+      else if (activeCats.has(v)) activeCats.delete(v);
+      else activeCats.add(v);
+      renderCatFilter(); render();
+    }));
 }
 
 document.getElementById("search").addEventListener("input", e => {
