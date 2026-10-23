@@ -265,19 +265,7 @@ main {
   }
   .lang-toggle { padding: 8px 14px; font-size: .9rem; }
 
-  /* chipek: vizszintesen gorgetheto sor, nem torik sorokba */
-  .catfilter {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: 4px;
-    margin: 0 -16px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  .catfilter::-webkit-scrollbar { display: none; }
-  .chip { flex-shrink: 0; padding: 10px 18px; font-size: .9rem; }
+  .chip { padding: 10px 18px; font-size: .9rem; }
 
   main { padding: 8px 16px 40px; }
   .cat-title { margin: 24px 0 14px; font-size: .88rem; }
