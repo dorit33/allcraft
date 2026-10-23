@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AllCraft</title>
-<link rel="stylesheet" href="assets/style.css?v=202610232246">
+<link rel="stylesheet" href="assets/style.css?v=202610232250">
 </head>
 <body>
 <header class="site-header">
@@ -16,7 +16,13 @@
   <h1 data-i18n="title"></h1>
   <p class="subtitle" data-i18n="subtitle"></p>
   <div class="controls">
-    <input id="search" type="search" data-i18n-ph="search" autocomplete="off">
+    <div class="searchrow">
+      <input id="search" type="search" data-i18n-ph="search" autocomplete="off">
+      <select id="sortsel" class="sortsel" aria-label="sort">
+        <option value="stars" data-i18n="sort_stars"></option>
+        <option value="name" data-i18n="sort_name"></option>
+      </select>
+    </div>
     <div id="catfilter" class="catfilter"></div>
   </div>
 </header>
@@ -24,7 +30,7 @@
 <main id="main"></main>
 
 <footer class="site-footer">
-  <span data-i18n="footer_generated"></span> <span id="gendate">2026-10-23 22:46</span>
+  <span data-i18n="footer_generated"></span> <span id="gendate">2026-10-23 22:50</span>
   · <span data-i18n="footer_source"></span>
 </footer>
 
@@ -37,6 +43,8 @@ const I18N = {
     title: "AllCraft",
     subtitle: "Jól ismert kreatív és irodai szoftverek nyílt forráskódú, Rust-ban újraírt változatai — mind egy helyen, közvetlenül a GitHub-repókról.",
     search: "Keresés (név, eredeti app, leírás)…",
+    sort_stars: "★ Népszerűség",
+    sort_name: "ABC sorrend",
     cat_all: "Összes", cat_releases: "Kiadásokkal",
     cat_graphics: "Grafika & fotó", cat_av: "Videó, hang & animáció",
     cat_office: "Iroda & ügyvitel", cat_comms: "Kommunikáció", cat_design: "Tervezés & CAD",
@@ -71,6 +79,8 @@ const I18N = {
     title: "AllCraft",
     subtitle: "Well-known creative and office software reimplemented in open source, rebuilt in Rust — all in one place, straight from the GitHub repos.",
     search: "Search (name, original app, description)…",
+    sort_stars: "★ Popularity",
+    sort_name: "A–Z",
     cat_all: "All", cat_releases: "With releases",
     cat_graphics: "Graphics & photo", cat_av: "Video, audio & animation",
     cat_office: "Office & productivity", cat_comms: "Communication", cat_design: "Design & CAD",
@@ -110,6 +120,7 @@ let lang = localStorage.getItem("cg-lang")
 let activeCats = new Set();
 let onlyReleases = false;
 let query = "";
+let sortBy = "stars";
 
 const t = k => (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k;
 
@@ -169,6 +180,9 @@ function render() {
     const shown = items.filter(r =>
       (!onlyReleases || r.release) &&
       (r.name + " " + (r.replaces || "") + " " + (r.description || "")).toLowerCase().includes(query));
+    shown.sort((a, b) => sortBy === "name"
+      ? a.name.localeCompare(b.name)
+      : (b.stars || 0) - (a.stars || 0));
     if (!shown.length) continue;
     html += `<section class="cat"><h2 class="cat-title">${t("section_" + cat)} <span class="count">${shown.length} ${t("count_suffix")}</span></h2><div class="grid">`;
     html += shown.length ? shown.map(cardHTML).join("") : `<p class="empty">${t("empty")}</p>`;
@@ -198,6 +212,9 @@ function renderCatFilter() {
     }));
 }
 
+document.getElementById("sortsel").addEventListener("change", e => {
+  sortBy = e.target.value; render();
+});
 document.getElementById("search").addEventListener("input", e => {
   query = e.target.value.trim().toLowerCase(); render();
 });
