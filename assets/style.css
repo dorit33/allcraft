@@ -201,6 +201,22 @@ main {
   padding: 1px 8px;
 }
 
+.status {
+  font-size: .72rem;
+  color: #d9a441;
+  border: 1px solid rgba(217, 164, 65, .4);
+  border-radius: 4px;
+  padding: 1px 8px;
+}
+
+.compat {
+  font-size: .72rem;
+  color: #8ab4ff;
+  border: 1px solid rgba(138, 180, 255, .35);
+  border-radius: 4px;
+  padding: 1px 8px;
+}
+
 .meta {
   display: flex;
   flex-wrap: wrap;
