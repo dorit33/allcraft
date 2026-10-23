@@ -184,15 +184,11 @@ main {
   margin-left: 6px;
 }
 
-.noteb {
-  display: inline-block;
-  font-size: .78rem;
+.note {
+  font-size: .8rem;
   color: #8ab4ff;
-  background: rgba(138, 180, 255, .1);
-  border: 1px solid rgba(138, 180, 255, .3);
-  border-radius: 999px;
-  padding: 2px 10px;
-  margin-left: 6px;
+  margin: 0;
+  line-height: 1.45;
 }
 
 .newb {
